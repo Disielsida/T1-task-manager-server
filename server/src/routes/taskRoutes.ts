@@ -9,19 +9,34 @@ import {
 
 const router = Router();
 
-// Получить все задачи
+/**
+ * @route GET /tasks
+ * @description Получить список всех задач
+ */
 router.get("/tasks", getTasks);
 
-// Получить задачу по ID
+/**
+ * @route GET /tasks/:id
+ * @description Получить задачу по ID
+ */
 router.get("/tasks/:id", getTask);
 
-// Создать задачу
+/**
+ * @route POST /tasks
+ * @description Создать новую задачу
+ */
 router.post("/tasks", postTask);
 
-// Обновить задачу
+/**
+ * @route PATCH /tasks/:id
+ * @description Обновить задачу по ID
+ */
 router.patch("/tasks/:id", patchTask);
 
-// Удалить задачу
+/**
+ * @route DELETE /tasks/:id
+ * @description Удалить задачу по ID
+ */
 router.delete("/tasks/:id", removeTask);
 
 export default router;

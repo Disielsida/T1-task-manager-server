@@ -1,5 +1,6 @@
 /**
- * Тип категории задачи.
+ * Возможные категории задачи.
+ * @typedef {"Bug" | "Feature" | "Documentation" | "Refactor" | "Test"} TaskCategory
  */
 export type TaskCategory =
   | "Bug"
@@ -9,17 +10,28 @@ export type TaskCategory =
   | "Test";
 
 /**
- * Тип статуса задачи.
+ * Возможные статусы задачи.
+ * @typedef {"To Do" | "In Progress" | "Done"} TaskStatus
  */
 export type TaskStatus = "To Do" | "In Progress" | "Done";
 
 /**
- * Тип приоритета задачи.
+ * Возможные приоритеты задачи.
+ * @typedef {"Low" | "Medium" | "High"} TaskPriority
  */
 export type TaskPriority = "Low" | "Medium" | "High";
 
 /**
- * Интерфейс задачи, используемый на сервере.
+ * Представляет задачу в системе управления задачами.
+ *
+ * @typedef {Object} Task
+ * @property {string} id - Уникальный идентификатор задачи (UUID)
+ * @property {string} title - Название задачи
+ * @property {string} [description] - Описание задачи (необязательное)
+ * @property {TaskCategory} category - Категория задачи
+ * @property {TaskStatus} status - Текущий статус задачи
+ * @property {TaskPriority} priority - Приоритет задачи
+ * @property {string} createdAt - Дата и время создания (ISO-строка)
  */
 export interface Task {
   id: string;
@@ -28,5 +40,5 @@ export interface Task {
   category: TaskCategory;
   status: TaskStatus;
   priority: TaskPriority;
-  createdAt: string; // ISO-строка даты
+  createdAt: string;
 }

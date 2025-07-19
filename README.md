@@ -46,22 +46,22 @@ DELETE /tasks/:id     # Удалить задачу по ID
 
 ## Установка
 
-### 1. Клонирование репозитория
+### 1. Клонирование репозитория:
 ```bash
 git clone https://github.com/Disielsida/T1-task-manager-server.git
 ```
 
-### 2. Переход в директорию
+### 2. Переход в директорию:
 ```bash
 cd T1-task-manager-server/server
 ```
 
-### 3. Установить зависимости
+### 3. Установить зависимости:
 ```bash
 npm install
 ```
 
-### 4. Запустить сервер 
+### 4. Запустить сервер:
 ```bash
 npm run dev
 ```

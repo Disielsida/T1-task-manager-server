@@ -21,24 +21,27 @@ DELETE /tasks/:id     # Удалить задачу по ID
 
 ## Примеры работы в Postman
 
-### GET
-Получение всех задач:
+### GET — gолучtybt всех задач:
 ![GET /tasks](./images/getAll.png)
 
-### GET by ID
-Получение задачи по id:
-![GET by ID /tasks](./images/getId.png)
+---
 
-### POST
-Создание задачи:
+### GET BY ID — получение задачи по ID:
+![GET by ID](./images/getId.png)
+
+---
+
+### POST — cоздание новой задачи:
 ![POST /tasks](./images/post.png)
 
-### PATCH
-Изменение задачи:
+---
+
+### PATCH — обновление задачи:
 ![PATCH /tasks](./images/patch.png)
 
-### DELETE
-Удаление задачи:
+---
+
+### DELETE — удаление задачи:
 ![DELETE /tasks](./images/delete.png)
 
 ## Установка
@@ -46,11 +49,13 @@ DELETE /tasks/:id     # Удалить задачу по ID
 ```bash
 # 1. Клонирование репозитория
 git clone https://github.com/Disielsida/T1-task-manager-server.git
+
+# 2. Переход в директорию
 cd T1-task-manager-server/server
 
-# 2. Установить зависимости
+# 3. Установить зависимости
 npm install
 
-# 3. Запустить сервер 
+# 4. Запустить сервер 
 npm run dev
 ```

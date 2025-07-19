@@ -21,13 +21,23 @@ DELETE /tasks/:id     # Удалить задачу по ID
 
 ## Примеры работы в Postman
 
-### GET — gолучtybt всех задач:
-![GET /tasks](./images/getAll.png)
+### GET — получение всех задач:
+![GET /tasks](./images/get.png)
 
 ---
 
 ### GET BY ID — получение задачи по ID:
 ![GET by ID](./images/getId.png)
+
+---
+
+### GET BY TITLE — получение задач с заданным словом в заголовке:
+![GET by TITLE](./images/filterTitle.png)
+
+---
+
+### GET BY DATE — получение задач c определенной датой:
+![GET by DATE](./images/filterDate.png)
 
 ---
 

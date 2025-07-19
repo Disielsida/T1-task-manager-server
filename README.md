@@ -1,4 +1,4 @@
-# T1 Task Manager — Server
+# T1-Task-Manager — Server
 
 Backend REST API for managing tasks using **Node.js**, **Express**, and **TypeScript**.
 

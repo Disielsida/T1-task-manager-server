@@ -10,28 +10,21 @@ import { Task } from "../types/task";
 import { v4 as uuidv4 } from "uuid";
 
 /**
- * Получает все задачи с возможной фильтрацией по названию и дате.
+ * Получает все задачи или фильтрует по подстроке в названии.
  *
- * @route GET /tasks?title=...&date=YYYY-MM-DD
- * @param {Request} req - HTTP-запрос с query-параметрами
+ * @route GET /tasks?title=...
+ * @param {Request} req - HTTP-запрос с query-параметром title
  * @param {Response} res - HTTP-ответ
- * @returns {Response} JSON-массив задач
+ * @returns {Response} Массив задач
  */
 export const getTasks = (req: Request, res: Response) => {
-  const { title, date } = req.query;
-
+  const { title } = req.query;
   let result = getAllTasks();
 
-  // Поиск по названию (без учёта регистра)
   if (typeof title === "string") {
     result = result.filter((task) =>
       task.title.toLowerCase().includes(title.toLowerCase())
     );
-  }
-
-  // Поиск по дате создания (только по дню, YYYY-MM-DD)
-  if (typeof date === "string") {
-    result = result.filter((task) => task.createdAt.startsWith(date));
   }
 
   res.json(result);

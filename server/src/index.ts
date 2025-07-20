@@ -7,11 +7,26 @@ import { Request, Response } from "express";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Разрешённые источники (origin) для CORS
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://t1-task-manager-server.onrender.com",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
+
 // Позволяет принимать JSON-запросы
 app.use(express.json());
-
-// Разрешаем запросы с фронтенда на http://localhost:5173 (во время разработки)
-app.use(cors({ origin: "http://localhost:5173" }));
 
 // Подключение маршрутов API
 app.use("/api", taskRoutes);

@@ -85,6 +85,12 @@ html.modal-open {
   margin-top: 4px;
 }
 
+.spinner {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
 @media (max-width: 768px) {
   .appContainer {
     padding: 12px 12px 24px;

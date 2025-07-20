@@ -7,6 +7,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y'
 import prettier from 'eslint-plugin-prettier'
 import tseslint from 'typescript-eslint'
 import parser from '@typescript-eslint/parser'
+import typescript from '@typescript-eslint/eslint-plugin' // 👈 добавлено
 import { globalIgnores } from 'eslint/config'
 
 export default tseslint.config([
@@ -23,6 +24,7 @@ export default tseslint.config([
       globals: globals.browser,
     },
     plugins: {
+      '@typescript-eslint': typescript, // 👈 зарегистрировано под правильным именем
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
@@ -44,7 +46,7 @@ export default tseslint.config([
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'prettier/prettier': 'warn',
-      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
-  }
+  },
 ])

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@shared/hooks/useAppDispatch";
-import { addTask } from "@entities/task/model/taskSlice";
 import {
   validateAllFields,
   validateField,
@@ -9,6 +8,7 @@ import {
 import { ROUTES } from "@shared/config/routes";
 import type { Task } from "@shared/types/task";
 import { v4 as uuidv4 } from "uuid";
+import { createTask } from "@entities/task/model/thunks/createTask";
 
 /**
  * Хук управления формой добавления задачи.
@@ -70,17 +70,30 @@ export const useAddTaskForm = () => {
   };
 
   /**
-   * Обработка сохранения: валидация и отправка задачи в Redux.
+   * Обработка сохранения: валидация и отправка задачи на сервер.
    */
-  const handleSave = () => {
+  const handleSave = async () => {
     const newErrors = validateAllFields(task);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    dispatch(addTask(task));
-    navigate(ROUTES.HOME);
+    try {
+      const resultAction = await dispatch(createTask(task));
+
+      if (createTask.fulfilled.match(resultAction)) {
+        navigate(ROUTES.HOME);
+      } else {
+        console.error(
+          "Ошибка при создании задачи:",
+          resultAction.payload ?? resultAction.error,
+        );
+        // Можно показать ошибку пользователю (например, через toast)
+      }
+    } catch (err) {
+      console.error("Неожиданная ошибка при создании задачи:", err);
+    }
   };
 
   /**
@@ -105,4 +118,3 @@ export const useAddTaskForm = () => {
     isValid,
   };
 };
-

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@shared/hooks/useAppDispatch";
 import { useAppSelector } from "@shared/hooks/useAppSelector";
-import { selectTaskById, updateTask } from "@entities/task/model/taskSlice";
+import { selectTaskById } from "@entities/task/model/taskSlice";
+import { updateTaskOnServer } from "@entities/task/model/thunks/updateTask";
 import { ROUTES } from "@shared/config/routes";
 import {
   validateAllFields,
@@ -12,38 +13,33 @@ import type { Task } from "@shared/types/task";
 
 /**
  * Хук управления формой редактирования задачи.
- * Загружает данные по ID из стора, валидирует, фокусирует input при открытии модального окна.
- *
- * @param id — идентификатор редактируемой задачи (опционален)
+ * Загружает задачу из стора, валидирует форму, отправляет PATCH-запрос.
  */
 export const useTaskForm = (id?: string) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Загружаем задачу из стора, если передан ID
   const existingTask = useAppSelector((state) =>
     id ? selectTaskById(state, id) : null,
   );
 
-  // Локальное состояние формы
   const [task, setTask] = useState<Task | null>(existingTask ?? null);
   const [errors, setErrors] = useState<Partial<Record<keyof Task, string>>>({});
 
-  // Реф на первый input и флаг фокуса
   const inputRef = useRef<HTMLInputElement>(null);
   const hasFocused = useRef(false);
 
-  // Загружаем задачу при изменении ID
+  // Проверка, если задача не найдена — редирект
   useEffect(() => {
     if (!id) return;
     if (!existingTask) {
-      navigate(ROUTES.HOME); // редирект, если задача не найдена
+      navigate(ROUTES.HOME);
     } else {
       setTask(existingTask);
     }
   }, [id, existingTask, navigate]);
 
-  // Автофокус при открытии модалки (через кастомное событие)
+  // Автофокус при открытии модального окна
   useEffect(() => {
     const handleFocus = () => {
       if (inputRef.current && !hasFocused.current) {
@@ -57,9 +53,7 @@ export const useTaskForm = (id?: string) => {
     return () => document.removeEventListener("modal-opened", handleFocus);
   }, []);
 
-  /**
-   * Обновляет поле задачи и валидирует его.
-   */
+  // Обновление конкретного поля и валидация
   const handleChange = <K extends keyof Task>(field: K, value: Task[K]) => {
     if (!task) return;
 
@@ -70,27 +64,35 @@ export const useTaskForm = (id?: string) => {
     setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
-  /**
-   * Сохраняет изменения задачи, если форма валидна.
-   */
-  const handleSave = () => {
+  // Обработка сохранения изменений
+  const handleSave = async () => {
     if (!task) return;
+
     const newErrors = validateAllFields(task);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    dispatch(updateTask(task));
-    navigate(ROUTES.HOME);
+    try {
+      const result = await dispatch(updateTaskOnServer(task));
+      if (updateTaskOnServer.fulfilled.match(result)) {
+        navigate(ROUTES.HOME);
+      } else {
+        console.error(
+          "Ошибка при обновлении задачи:",
+          result.payload ?? result.error,
+        );
+      }
+    } catch (err) {
+      console.error("Неожиданная ошибка:", err);
+    }
   };
 
-  /** Отмена редактирования — возврат на главную */
   const handleCancel = () => {
     navigate(ROUTES.HOME);
   };
 
-  /** Общая валидность формы */
   const isValid = Object.values(validateAllFields(task || ({} as Task))).every(
     (e) => !e,
   );

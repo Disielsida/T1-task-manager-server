@@ -40,4 +40,7 @@ export interface Task {
 
   /** Приоритет */
   priority: TaskPriority;
+
+  /** Дата создания задачи */
+  createdAt?: string;
 }

@@ -44,7 +44,11 @@ export const NotFound = () => {
             Возможно, вы перешли по неверной ссылке.
           </T>
 
-          <Button appearance="primary" onClick={() => navigate(ROUTES.HOME)} dimension="l">
+          <Button
+            appearance="primary"
+            onClick={() => navigate(ROUTES.HOME)}
+            dimension="l"
+          >
             Вернуться на главную
           </Button>
         </div>

@@ -1,26 +1,18 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Task } from "@shared/types/task";
-import { initialTasks } from "@shared/data/initialTasks";
-import { loadTasks, saveTasks } from "@shared/lib/storage";
+import { fetchTasks } from "./thunks/fetchTasks";
+import { createTask } from "./thunks/createTask";
+import { updateTaskOnServer } from "./thunks/updateTask";
+import { deleteTaskFromServer } from "./thunks/deleteTask";
 
 type TaskState = {
   tasks: Task[];
+  isLoading: boolean;
 };
 
-/**
- * Загружаем задачи из localStorage.
- * Если список пуст — используем initialTasks и сразу сохраняем их.
- */
-const loadedTasks = loadTasks();
-const isEmpty = loadedTasks.length === 0;
-const effectiveTasks = isEmpty ? initialTasks : loadedTasks;
-
-if (isEmpty) {
-  saveTasks(initialTasks);
-}
-
 const initialState: TaskState = {
-  tasks: effectiveTasks,
+  tasks: [],
+  isLoading: false,
 };
 
 /**
@@ -28,64 +20,111 @@ const initialState: TaskState = {
  * - добавление;
  * - обновление;
  * - удаление;
- * - селекторы;
- * - синхронизация с localStorage.
+ * - загрузка с сервера;
+ * - создание новой задачи.
  */
 const taskSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
     /**
-     * Обновляет задачу по id и сохраняет в localStorage.
-     * @param state Текущее состояние
-     * @param action Обновлённая задача
+     * Обновляет задачу по id.
      */
     updateTask(state, action: PayloadAction<Task>) {
-      const index = state.tasks.findIndex((task) => task.id === action.payload.id);
+      const index = state.tasks.findIndex(
+        (task) => task.id === action.payload.id,
+      );
       if (index !== -1) {
         state.tasks[index] = action.payload;
-        saveTasks(state.tasks);
       }
     },
 
     /**
-     * Добавляет новую задачу и сохраняет в localStorage.
-     * @param state Текущее состояние
-     * @param action Новая задача
+     * Локальное добавление задачи (если нужно).
      */
     addTask(state, action: PayloadAction<Task>) {
       state.tasks.push(action.payload);
-      saveTasks(state.tasks);
     },
 
     /**
-     * Удаляет задачу по id и сохраняет в localStorage.
-     * @param state Текущее состояние
-     * @param action id задачи для удаления
+     * Удаляет задачу по id.
      */
     deleteTask(state, action: PayloadAction<string>) {
       state.tasks = state.tasks.filter((task) => task.id !== action.payload);
-      saveTasks(state.tasks);
     },
   },
 
   selectors: {
     /**
-     * Получить все задачи из состояния.
-     * @param state Состояние среза
+     * Получить все задачи.
      */
     selectTasks: (state) => state.tasks,
 
     /**
      * Получить задачу по её id.
-     * @param state Состояние среза
-     * @param id Идентификатор задачи
      */
     selectTaskById: (state, id: string) =>
       state.tasks.find((task) => task.id === id),
+
+    /**
+     * Получить флаг загрузки.
+     */
+    selectIsLoading: (state) => state.isLoading,
+  },
+
+  extraReducers: (builder) => {
+    builder
+      // Загрузка задач
+      .addCase(fetchTasks.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchTasks.fulfilled, (state, action) => {
+        state.tasks = action.payload;
+        state.isLoading = false;
+      })
+      .addCase(fetchTasks.rejected, (state, action) => {
+        state.isLoading = false;
+        console.error("fetchTasks.rejected:", action.error);
+      })
+
+      // Создание задачи
+      .addCase(createTask.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createTask.fulfilled, (state, action) => {
+        state.tasks.push(action.payload);
+        state.isLoading = false;
+      })
+      .addCase(createTask.rejected, (state, action) => {
+        state.isLoading = false;
+        console.error("createTask.rejected:", action.error);
+      })
+
+      // Обновление задачи
+      .addCase(updateTaskOnServer.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateTaskOnServer.fulfilled, (state, action) => {
+        const index = state.tasks.findIndex((t) => t.id === action.payload.id);
+        if (index !== -1) {
+          state.tasks[index] = action.payload;
+        }
+        state.isLoading = false;
+      })
+      .addCase(updateTaskOnServer.rejected, (state, action) => {
+        state.isLoading = false;
+        console.error("updateTask.rejected:", action.error);
+      })
+      .addCase(deleteTaskFromServer.fulfilled, (state, action) => {
+        state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+      })
+      .addCase(deleteTaskFromServer.rejected, (_, action) => {
+        console.error("deleteTask.rejected:", action.error);
+      });
   },
 });
 
 export const { updateTask, addTask, deleteTask } = taskSlice.actions;
-export const { selectTasks, selectTaskById } = taskSlice.selectors;
+export const { selectTasks, selectTaskById, selectIsLoading } =
+  taskSlice.selectors;
 export const taskReducer = taskSlice.reducer;

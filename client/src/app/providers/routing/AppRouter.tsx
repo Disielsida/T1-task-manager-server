@@ -29,7 +29,7 @@ export default function App() {
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.TASK()} element={<TaskDetails />} />
         <Route path={ROUTES.ADD_TASK} element={<AddTaskForm />} />
-        <Route path="*" element={<NotFound />} /> 
+        <Route path="*" element={<NotFound />} />
       </Routes>
 
       {/* Отдельные модальные маршруты поверх текущей страницы */}

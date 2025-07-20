@@ -1,7 +1,10 @@
 import React, { useMemo, useEffect, useState } from "react";
-import { T } from "@admiral-ds/react-ui";
+import { T, Spinner } from "@admiral-ds/react-ui";
 import { TaskList } from "@widgets/TaskList";
 import { useAppSelector } from "@shared/hooks/useAppSelector";
+import { useAppDispatch } from "@shared/hooks/useAppDispatch";
+import { fetchTasks } from "@entities/task/model/thunks/fetchTasks";
+import { selectIsLoading, selectTasks } from "@entities/task/model/taskSlice";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { TaskFilters } from "@widgets/TaskFilters";
 import { Footer } from "@widgets/Footer";
@@ -15,10 +18,15 @@ import "@shared/styles/index.css";
  * Также содержит кнопку для добавления новой задачи через модальное окно.
  */
 export const Home: React.FC = () => {
-  // Получаем все задачи из Redux-хранилища
-  const tasks = useAppSelector((state) => state.tasks.tasks);
+  const dispatch = useAppDispatch();
+  const tasks = useAppSelector(selectTasks);
+  const isLoading = useAppSelector(selectIsLoading);
 
-  // Чтение query-параметров для фильтрации задач
+  // Загружаем задачи при монтировании компонента
+  useEffect(() => {
+    dispatch(fetchTasks());
+  }, [dispatch]);
+
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category") || "All";
   const status = searchParams.get("status") || "All";
@@ -27,10 +35,6 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  /**
-   * Фильтруем задачи в зависимости от выбранных параметров.
-   * Используем useMemo для мемоизации результата.
-   */
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
       const matchCategory = category === "All" || task.category === category;
@@ -42,7 +46,6 @@ export const Home: React.FC = () => {
 
   const [isMobile, setIsMobile] = useState(false);
 
-  // Отслеживаем размер экрана для адаптации заголовка
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
     setIsMobile(mediaQuery.matches);
@@ -53,10 +56,6 @@ export const Home: React.FC = () => {
     return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
-  /**
-   * Открытие формы добавления задачи — открывается в модальном окне
-   * за счёт передачи backgroundLocation.
-   */
   const handleAddClick = () => {
     navigate(ROUTES.ADD_TASK, {
       state: { backgroundLocation: location },
@@ -77,7 +76,6 @@ export const Home: React.FC = () => {
                 Менеджер задач
               </T>
 
-              {/* Кнопка для добавления новой задачи */}
               <button
                 className="addTaskBtn"
                 title="Добавить задачу"
@@ -91,15 +89,19 @@ export const Home: React.FC = () => {
             <div className="titleUnderline" />
           </div>
 
-          {/* Компонент фильтров (query-based) */}
           <TaskFilters />
         </div>
 
-        {/* Список отфильтрованных задач */}
-        <TaskList tasks={filteredTasks} />
+        {/* Спиннер при загрузке */}
+        {isLoading ? (
+          <div className="spinner">
+            <Spinner dimension="l" />
+          </div>
+        ) : (
+          <TaskList tasks={filteredTasks} />
+        )}
       </div>
 
-      {/* Нижний колонтитул */}
       <Footer />
     </div>
   );

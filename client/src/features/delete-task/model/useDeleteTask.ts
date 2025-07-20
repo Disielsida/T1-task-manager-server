@@ -1,19 +1,19 @@
 import { useAppDispatch } from "@shared/hooks/useAppDispatch";
-import { deleteTask } from "@entities/task/model/taskSlice";
+import { deleteTaskFromServer } from "@entities/task/model/thunks/deleteTask";
 
 /**
- * Хук для удаления задачи.
- * Оборачивает Redux-экшен deleteTask в удобную функцию.
+ * Хук для удаления задачи с сервера.
+ * Оборачивает санку deleteTaskFromServer в удобную функцию.
  */
 export const useDeleteTask = () => {
   const dispatch = useAppDispatch();
 
   /**
-   * Удаляет задачу по ID.
+   * Удаляет задачу по ID через сервер.
    * @param id - идентификатор задачи
    */
   const removeTask = (id: string) => {
-    dispatch(deleteTask(id));
+    dispatch(deleteTaskFromServer(id));
   };
 
   return { removeTask };

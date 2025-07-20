@@ -1,0 +1,44 @@
+.container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.titleBlock {
+  margin-bottom: 5px;
+}
+
+.titleWithUnderline {
+  display: inline-block;
+}
+
+.heading {
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.titleUnderline {
+  height: 2px;
+  background-color: var(--admiral-color-border-default, #c5c5c5);
+  width: 100%;
+  border-radius: 1px;
+  margin-top: 4px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 12px;
+  }
+}

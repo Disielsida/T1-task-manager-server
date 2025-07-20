@@ -1,0 +1,55 @@
+.filtersRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 33px;
+  margin-bottom: 30px;
+  justify-content: flex-start;
+}
+
+.categoryUnderline,
+.statusUnderline,
+.priorityUnderline {
+  border: none;
+  border-bottom: 2px solid;
+  border-radius: 0;
+  padding: 10px 0;
+  background-color: transparent;
+  box-sizing: border-box;
+  width: 190px;
+}
+
+.categoryUnderline {
+  border-color: #32C665;
+}
+
+.statusUnderline {
+  border-color: #3A85FF;
+}
+
+.priorityUnderline {
+  border-color: #FF8D64;
+}
+
+@media (max-width: 768px) {
+  .filtersRow {
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .categoryUnderline,
+  .statusUnderline,
+  .priorityUnderline {
+    width: 50%;
+    flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 415px) {
+  .categoryUnderline,
+  .statusUnderline,
+  .priorityUnderline {
+    width: 70%;
+    flex: 0 0 100%;
+  }
+}

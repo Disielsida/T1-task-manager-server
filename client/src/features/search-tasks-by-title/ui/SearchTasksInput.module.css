@@ -19,7 +19,7 @@
 .inputWrapper {
   flex: 1;
   min-width: 200px;
-  max-width: 380px;
+  max-width: 445px;
 }
 
 @media (max-width: 768px) {

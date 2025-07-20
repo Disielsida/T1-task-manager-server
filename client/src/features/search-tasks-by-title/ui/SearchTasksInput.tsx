@@ -58,7 +58,7 @@ export const SearchTasksInput: React.FC = () => {
           color="Neutral/Neutral 50"
           className={styles.label}
         >
-          Поиск по заголовку задачи:
+          Поиск по заголовку:
         </T>
         <div className={styles.inputWrapper}>
           <EditMode

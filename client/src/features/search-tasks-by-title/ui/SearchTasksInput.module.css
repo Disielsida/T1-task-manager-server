@@ -1,0 +1,35 @@
+.wrapper {
+  max-width: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.labelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-left: 2px solid #c5c5c5;
+}
+
+.label {
+  display: inline-block;
+  padding-left: 7px;
+}
+
+.inputWrapper {
+  flex: 1;
+  min-width: 200px;
+  max-width: 380px;
+}
+
+@media (max-width: 768px) {
+  .labelWrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .inputWrapper {
+    padding-left: 7px;
+  }
+}

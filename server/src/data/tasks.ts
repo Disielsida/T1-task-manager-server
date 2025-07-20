@@ -17,7 +17,7 @@ export const tasks: Task[] = [
   {
     id: uuidv4(),
     title: "Fix login bug",
-    description: "Login fails when password contains special characters",
+    description: "Login fails when password contains special characters.",
     category: "Bug",
     status: "To Do",
     priority: "High",
@@ -26,7 +26,7 @@ export const tasks: Task[] = [
   {
     id: uuidv4(),
     title: "Implement dark mode",
-    description: "Add theme toggle for dark mode",
+    description: "Add a theme switch for dark mode to increase user loyalty and user experience.",
     category: "Feature",
     status: "In Progress",
     priority: "Medium",
@@ -35,7 +35,7 @@ export const tasks: Task[] = [
   {
     id: uuidv4(),
     title: "Update README",
-    description: "Add usage instructions",
+    description: "Add instructions for use that won't bother and gather dust on the shelf.",
     category: "Documentation",
     status: "Done",
     priority: "Low",

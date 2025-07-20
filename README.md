@@ -1,6 +1,7 @@
-# T1-Task-Manager — Server (Fullstack Task Management App)
+# T1-Task-Manager — Server
 
-Полноценное приложение для управления задачами в стиле Notion, построенное на React, TypeScript, Redux Toolkit и Node.js с реализоавнным REST API.
+Полноценное клиент-серверное приложение для управления задачами. Интерфейс в стиле Notion, построен на React + TypeScript с использованием Admiral Design System. 
+Серверная часть — Node.js + Express. Все данные обрабатываются через REST API.
 
 ## Деплой
 

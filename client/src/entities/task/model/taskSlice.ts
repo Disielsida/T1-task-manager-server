@@ -92,11 +92,7 @@ const taskSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(createTask.fulfilled, (state, action) => {
-        // Заменяем ранее добавленную задачу на ту, что вернулась от сервера
-        const index = state.tasks.findIndex((t) => t.id === action.payload.id);
-        if (index !== -1) {
-          state.tasks[index] = action.payload;
-        }
+        state.tasks.push(action.payload);
         state.isLoading = false;
       })
       .addCase(createTask.rejected, (state, action) => {

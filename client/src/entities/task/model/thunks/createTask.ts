@@ -3,7 +3,8 @@ import type { Task } from "@shared/types/task";
 import { API_BASE_URL } from "@shared/config/api";
 
 /**
- * thunk для создания новой задачи на сервере.
+ * Thunk для создания новой задачи на сервере.
+ * При успехе возвращает созданную задачу.
  */
 export const createTask = createAsyncThunk<Task, Task>(
   "tasks/create",
@@ -17,14 +18,19 @@ export const createTask = createAsyncThunk<Task, Task>(
         body: JSON.stringify(task),
       });
 
+      // Проверка на успешный ответ
       if (!response.ok) {
-        throw new Error("Не удалось создать задачу");
+        const errorText = await response.text();
+        return rejectWithValue(`Ошибка при создании задачи: ${errorText}`);
       }
 
-      const data: Task = await response.json();
-      return data;
+      const createdTask: Task = await response.json();
+      return createdTask;
     } catch (error) {
-      return rejectWithValue(`Ошибка при создании задачи: ${error}`);
+      // Гарантированно приведение ошибки к строке
+      const message =
+        error instanceof Error ? error.message : "Неизвестная ошибка";
+      return rejectWithValue(`Ошибка при создании задачи: ${message}`);
     }
   },
 );

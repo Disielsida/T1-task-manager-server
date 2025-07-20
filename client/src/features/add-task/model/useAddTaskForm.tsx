@@ -1,26 +1,29 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@shared/hooks/useAppDispatch";
+import { ROUTES } from "@shared/config/routes";
 import {
   validateAllFields,
   validateField,
 } from "@shared/validators/formValidators";
-import { ROUTES } from "@shared/config/routes";
 import type { Task } from "@shared/types/task";
 import { v4 as uuidv4 } from "uuid";
 import { createTask } from "@entities/task/model/thunks/createTask";
+import {
+  addTask,
+  deleteTask,
+  updateTask,
+} from "@entities/task/model/taskSlice";
 
 /**
  * Хук управления формой добавления задачи.
- * Содержит логику валидации, управления состоянием, фокусировки и навигации.
+ * Поддерживает валидацию, автофокус и оптимистичное добавление.
  */
 export const useAddTaskForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  /**
-   * Начальное состояние новой задачи с уникальным ID.
-   */
+  // Инициализация новой задачи
   const [task, setTask] = useState<Task>({
     id: uuidv4(),
     title: "",
@@ -28,25 +31,16 @@ export const useAddTaskForm = () => {
     category: "Bug",
     status: "To Do",
     priority: "Medium",
+    createdAt: new Date().toISOString(),
   });
 
-  /**
-   * Ошибки валидации по каждому полю.
-   */
   const [errors, setErrors] = useState<Partial<Record<keyof Task, string>>>({});
-
-  /**
-   * Реф для фокусировки на первом инпуте.
-   */
   const inputRef = useRef<HTMLInputElement>(null);
   const hasFocused = useRef(false);
 
-  /**
-   * Эффект для фокусировки на поле ввода при первом рендере.
-   */
+  // Фокус на первом рендере
   useEffect(() => {
     if (hasFocused.current) return;
-
     const raf = requestAnimationFrame(() => {
       if (inputRef.current) {
         inputRef.current.focus();
@@ -54,24 +48,18 @@ export const useAddTaskForm = () => {
         hasFocused.current = true;
       }
     });
-
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  /**
-   * Обновление значения поля формы и валидация по мере ввода.
-   */
+  // Обновление поля и валидация
   const handleChange = <K extends keyof Task>(field: K, value: Task[K]) => {
     const updated = { ...task, [field]: value };
     setTask(updated);
-
     const error = validateField(field, value);
     setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
-  /**
-   * Обработка сохранения: валидация и отправка задачи на сервер.
-   */
+  // Сохранение задачи (оптимистично)
   const handleSave = async () => {
     const newErrors = validateAllFields(task);
     if (Object.keys(newErrors).length > 0) {
@@ -79,33 +67,24 @@ export const useAddTaskForm = () => {
       return;
     }
 
-    try {
-      const resultAction = await dispatch(createTask(task));
+    dispatch(addTask(task)); // 1. Оптимистично добавляем
 
-      if (createTask.fulfilled.match(resultAction)) {
-        navigate(ROUTES.HOME);
-      } else {
-        console.error(
-          "Ошибка при создании задачи:",
-          resultAction.payload ?? resultAction.error,
-        );
-        // Можно показать ошибку пользователю (например, через toast)
-      }
+    try {
+      const result = await dispatch(createTask(task)).unwrap(); // 2. Отправляем на сервер
+
+      dispatch(updateTask(result)); // 3. Заменяем на серверную (если отличается)
+      navigate(ROUTES.HOME);
     } catch (err) {
-      console.error("Неожиданная ошибка при создании задачи:", err);
+      dispatch(deleteTask(task.id)); // 4. Откат при ошибке
+      console.error("Ошибка при создании задачи:", err);
+      // Тут можно показать toast-уведомление
     }
   };
 
-  /**
-   * Обработка отмены — возврат на главную страницу.
-   */
   const handleCancel = () => {
     navigate(ROUTES.HOME);
   };
 
-  /**
-   * Глобальный валидатор для формы.
-   */
   const isValid = Object.values(validateAllFields(task)).every((e) => !e);
 
   return {

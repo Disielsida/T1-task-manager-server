@@ -4,7 +4,7 @@
 
 ## Деплой
 
-👉 [Демо-версия T1-task-manager](https://t1-task-manager.onrender.com/)
+👉 [Демо-версия T1-task-manager — Server ](https://t1-task-manager-server.onrender.com)
 
 ## Стек технологий
 
